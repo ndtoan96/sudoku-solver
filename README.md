@@ -1,2 +1,2 @@
 # sudoku-solver
-A simple program written in Rust to solve tradition sudoku.
+A simple console program written in Rust to solve tradition sudoku.
