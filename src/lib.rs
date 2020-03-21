@@ -1,12 +1,31 @@
 #[derive(PartialEq)]
 #[derive(Debug)]
+/// This enum represents the status of the sudoku board.
 pub enum Status {
+    /// There's still blanks in the sudoku.
     NotCompleted,
+    /// The sudoku is completed.
     Valid,
+    /// There's duplicate number in a row, a column or a region, make the sudoku invalid.
     Invalid
 }
 
+/// This function take a 9x9 array represents the sudoku board (blank is 0) and fill in all the blanks.
 pub fn sudoku_solver(board: &[[u8; 9]; 9]) -> Result<[[u8; 9]; 9], String> {
+    //! # Example:
+    //! ```
+    //! let board: [[u8; 9]; 9] = [
+    //!     [5,3,0,0,7,0,0,0,0],
+    //!     [6,0,0,1,9,5,0,0,0],
+    //!     [0,9,8,0,0,0,0,6,0],
+    //!     [8,0,0,0,6,0,0,0,3],
+    //!     [4,0,0,8,0,3,0,0,1],
+    //!     [7,0,0,0,2,0,0,0,6],
+    //!     [0,6,0,0,0,0,2,8,0],
+    //!     [0,0,0,4,1,9,0,0,5],
+    //!     [0,0,0,0,8,0,0,7,9]];
+    //! println!("{:?}", sudoku::sudoku_solver(&board).unwrap());
+    //! ```
     let mut res = *board;
     let mut imin = 10;
     let mut jmin = 10;
@@ -56,52 +75,7 @@ pub fn sudoku_solver(board: &[[u8; 9]; 9]) -> Result<[[u8; 9]; 9], String> {
     }
 }
 
-fn possible_nums(board: &[[u8; 9]; 9], row: usize, col: usize) -> Vec<u8> {
-    let mut res = vec![];
-    let mut map = [0; 9];
-    for k in 0..9 {
-        if (k != col) && (board[row][k] != 0) && (board[row][k] < 9) {
-            map[(board[row][k]-1) as usize] += 1;
-        }
-
-        if (k != row) && (board[k][col] != 0) && (board[k][col] < 9) {
-            map[(board[k][col]-1) as usize] += 1;
-        }
-    }
-
-    for i in (row/3)*3..(row/3)*3+3 {
-        for j in (col/3)*3..(col/3)*3+3 {
-            if (i != row) && (j != col) && (board[i][j] != 0) && (board[i][j] < 9) {
-                map[(board[i][j]-1) as usize] += 1;
-            }
-        }
-    }
-
-    for (x, &cnt) in map.iter().enumerate() {
-        if cnt == 0 {
-            res.push((x+1) as u8);
-        }
-    }
-
-    res
-}
-
-fn is_duplicate(arr: &[u8; 9]) -> bool {
-    let mut map: [u8; 9] = [0; 9];
-    for &value in arr {
-        if value != 0 {
-            map[(value-1) as usize] += 1;
-        }
-    }
-    for &i in &map {
-        if i > 1 {
-            return true;
-        }
-    }
-    
-    false
-}
-
+/// This function check the status of current sudoku board.
 pub fn sudoku_check(board: &[[u8; 9]; 9]) -> Status {
     
     for i in 0..9 {
@@ -150,6 +124,52 @@ pub fn sudoku_check(board: &[[u8; 9]; 9]) -> Status {
     }
 
     Status::Valid
+}
+
+fn possible_nums(board: &[[u8; 9]; 9], row: usize, col: usize) -> Vec<u8> {
+    let mut res = vec![];
+    let mut map = [0; 9];
+    for k in 0..9 {
+        if (k != col) && (board[row][k] != 0) && (board[row][k] < 9) {
+            map[(board[row][k]-1) as usize] += 1;
+        }
+
+        if (k != row) && (board[k][col] != 0) && (board[k][col] < 9) {
+            map[(board[k][col]-1) as usize] += 1;
+        }
+    }
+
+    for i in (row/3)*3..(row/3)*3+3 {
+        for j in (col/3)*3..(col/3)*3+3 {
+            if (i != row) && (j != col) && (board[i][j] != 0) && (board[i][j] < 9) {
+                map[(board[i][j]-1) as usize] += 1;
+            }
+        }
+    }
+
+    for (x, &cnt) in map.iter().enumerate() {
+        if cnt == 0 {
+            res.push((x+1) as u8);
+        }
+    }
+
+    res
+}
+
+fn is_duplicate(arr: &[u8; 9]) -> bool {
+    let mut map: [u8; 9] = [0; 9];
+    for &value in arr {
+        if value != 0 {
+            map[(value-1) as usize] += 1;
+        }
+    }
+    for &i in &map {
+        if i > 1 {
+            return true;
+        }
+    }
+    
+    false
 }
 
 #[cfg(test)]
